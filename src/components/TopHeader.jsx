@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Sun,
-  Moon,
   Bell,
   LogOut,
   Calendar,
@@ -19,6 +17,7 @@ import {
 } from 'lucide-react';
 import { WindowsMicroLogo, RhelMicroLogo } from './BackgroundTexture';
 import BrandMark from './BrandMark';
+import ThemeSwitch from './ui/ThemeSwitch';
 
 export default function TopHeader({
   activeTabTitle = 'Central Dashboard',
@@ -369,22 +368,7 @@ export default function TopHeader({
         </div>
 
         {/* Light / Dark Mode Toggle */}
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="px-3 py-1.5 text-xs font-medium text-fg2 hover:text-fg bg-ink/[0.04] hover:bg-ink/[0.08] border border-ink/[0.08] rounded-full flex items-center gap-1.5 transition-all"
-        >
-          {darkMode ? (
-            <>
-              <Sun size={14} className="text-amber-400" />
-              <span>Light mode</span>
-            </>
-          ) : (
-            <>
-              <Moon size={14} className="text-cyan-400" />
-              <span>Dark mode</span>
-            </>
-          )}
-        </button>
+        <ThemeSwitch dark={darkMode} onChange={setDarkMode} />
 
         {/* Live Status Badge */}
         <div className="px-3 py-1.5 text-xs font-semibold text-emerald-400 bg-emerald-950/40 border border-emerald-500/30 rounded-full flex items-center gap-1.5 shadow-[0_0_10px_rgba(16,185,129,0.15)]">

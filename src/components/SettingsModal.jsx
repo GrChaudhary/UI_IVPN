@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, UserCog, Palette, Activity, Plug, HeartPulse, CalendarClock, Database, Info, Sun, Moon } from 'lucide-react';
+import { X, UserCog, Palette, Activity, Plug, HeartPulse, CalendarClock, Database, Info } from 'lucide-react';
 import Select from './ui/Select';
 import Toggle from './ui/Toggle';
+import ThemeSwitch from './ui/ThemeSwitch';
 import { ROLES, ORGS } from '../data/accessData';
 import { AGENTS_LIST } from '../data/nexusData';
 import pkg from '../../package.json';
@@ -86,13 +87,7 @@ export default function SettingsModal({ isOpen, onClose, settings, onUpdate, onR
     appearance: (
       <>
         <Row title="Theme" hint="Applies to the workspace and dialogs.">
-          <div className="flex rounded-full border border-ink/[0.12] p-0.5">
-            {[[true, Moon, 'Dark'], [false, Sun, 'Light']].map(([isDark, Icon, label]) => (
-              <button key={label} onClick={() => setDarkMode(!isDark)} className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold ${darkMode !== isDark ? 'text-fg3' : 'pill-tab-active'}`}>
-                <Icon size={12} /> {label}
-              </button>
-            ))}
-          </div>
+          <ThemeSwitch dark={darkMode} onChange={setDarkMode} />
         </Row>
         <Row title="Reduce motion" hint="Turns off flowing connectors, orbs and transitions.">
           <Toggle checked={settings.reduceMotion} onChange={(v) => onUpdate({ reduceMotion: v })} label="Reduce motion" />

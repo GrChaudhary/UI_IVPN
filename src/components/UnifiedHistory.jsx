@@ -1,8 +1,10 @@
 import React, { useState, useMemo } from 'react';
-import { History as HistoryIcon, Filter, Search, ChevronRight, Sparkles } from 'lucide-react';
+import { History as HistoryIcon, Filter, Search, ChevronRight, Sparkles, Download } from 'lucide-react';
 import Select from './ui/Select';
 import PageHeader from './ui/PageHeader';
 import { TECH_OPTIONS } from '../simulation/simulationEngine';
+import { stageState } from '../simulation/runDetail';
+import RunDetailModal from './RunDetailModal';
 
 /* ---------- static seed (fallback when App hasn't loaded EXECUTION_RUNS) ---------- */
 const STATIC_SEED = [
@@ -95,14 +97,6 @@ const STATUS_LABELS = {
 
 const STAGE_TONE = { done: 'bg-emerald-400', active: 'bg-amber-400', failed: 'bg-red-500', pending: 'bg-slate-600' };
 
-/** done = completed, active = running now, failed = where an aborted run stopped, pending = not reached */
-const stageState = (run, i) =>
-  run.stagesArray[i] === 1 ? 'done'
-  : i !== run.stagesDone ? 'pending'
-  : run.status === 'ABORTED' ? 'failed'
-  : run.status === 'RUNNING' ? 'active'
-  : 'pending';
-
 const unique = (runs, key) => [...new Set(runs.map((r) => r[key]).filter(Boolean))];
 
 export default function UnifiedHistory({ historyRuns }) {
@@ -114,6 +108,8 @@ export default function UnifiedHistory({ historyRuns }) {
   const [techFilter,   setTechFilter]   = useState('All');
   const [searchQuery,  setSearchQuery]  = useState('');
   const [selectedRun,  setSelectedRun]  = useState(null);
+  const [detailTab,    setDetailTab]    = useState('stages');
+  const openRun = (run, tab = 'stages') => { setDetailTab(tab); setSelectedRun(run); };
 
   const filtered = useMemo(() => {
     const q = searchQuery.toLowerCase();
@@ -239,9 +235,14 @@ export default function UnifiedHistory({ historyRuns }) {
                     <td className="py-3 px-2 text-fg3 whitespace-nowrap">{run.started}</td>
                     <td className="py-3 px-3">
                       <div className="flex items-center justify-end">
-                        <button onClick={() => setSelectedRun(run)} className="text-cyan-400 hover:text-cyan-300 font-sans font-semibold text-xs flex items-center gap-0.5">
-                          View <ChevronRight size={13} />
-                        </button>
+                        <div className="flex items-center gap-3">
+                          <button onClick={() => openRun(run, 'report')} aria-label={`Download report for ${run.id}`} title="Download report" className="text-fg3 hover:text-cyan-300 font-sans text-xs flex items-center gap-1">
+                            <Download size={13} /> Report
+                          </button>
+                          <button onClick={() => openRun(run)} className="text-cyan-400 hover:text-cyan-300 font-sans font-semibold text-xs flex items-center gap-0.5">
+                            View <ChevronRight size={13} />
+                          </button>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -252,88 +253,7 @@ export default function UnifiedHistory({ historyRuns }) {
         )}
       </div>
 
-      {/* Run Detail Modal */}
-      {selectedRun && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in">
-          <div className="nexus-card max-w-2xl w-full p-6 border-cyan-500/40 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-ink/[0.08]">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  {selectedRun.simulated && (
-                    <span className="text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1">
-                      <Sparkles size={10} /> SIMULATED
-                    </span>
-                  )}
-                  <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-bold ${selectedRun.statusColor}`}>
-                    {selectedRun.status}
-                  </span>
-                </div>
-                <h3 className="text-sm font-bold text-fg font-mono break-all">{selectedRun.id}</h3>
-                <span className="text-xs text-fg3">
-                  {selectedRun.technology} · {selectedRun.env} · Triggered by: {selectedRun.triggeredBy}
-                </span>
-              </div>
-              <button
-                onClick={() => setSelectedRun(null)}
-                className="text-fg3 hover:text-fg p-1 flex-shrink-0"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Stats row */}
-            <div className="grid grid-cols-3 gap-3">
-              <div className="p-3 rounded-xl bg-emerald-950/20 border border-emerald-500/20 text-center">
-                <div className="text-xl font-extrabold text-emerald-400">{selectedRun.passed ?? '—'}</div>
-                <div className="text-[10px] text-fg3 mt-1">Nodes Passed</div>
-              </div>
-              <div className="p-3 rounded-xl bg-amber-950/20 border border-amber-500/20 text-center">
-                <div className="text-xl font-extrabold text-amber-400">{selectedRun.warnings ?? '—'}</div>
-                <div className="text-[10px] text-fg3 mt-1">Warnings</div>
-              </div>
-              <div className="p-3 rounded-xl bg-rose-950/20 border border-rose-500/20 text-center">
-                <div className="text-xl font-extrabold text-rose-400">{selectedRun.failed ?? '—'}</div>
-                <div className="text-[10px] text-fg3 mt-1">Failed</div>
-              </div>
-            </div>
-
-            {/* Stage progress */}
-            <div className="p-3 rounded-xl bg-inset border border-ink/[0.06]">
-              <div className="text-[10px] font-bold text-fg3 uppercase tracking-wider mb-2">Stage Progress</div>
-              <div className="flex items-center gap-1">
-                {selectedRun.stagesArray.map((st, i) => (
-                  <div key={i} className="flex flex-col items-center gap-1 flex-1">
-                    <span className={`w-full h-3 rounded ${st === 1 ? 'bg-emerald-500' : 'bg-slate-800'}`}></span>
-                    <span className="text-[8px] font-mono text-fg4">S{i+1}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Log terminal */}
-            <div className="space-y-2 p-3 rounded-xl bg-black/80 font-mono text-[11px] text-emerald-400 max-h-44 overflow-y-auto custom-scrollbar">
-              <div>[00:00:00] Run initiated by operator ({selectedRun.triggeredBy})</div>
-              <div>[00:00:03] Stage 1-4: Risk scoring gates evaluated &amp; passed (Risk index: 0.14)</div>
-              <div>[00:00:06] Stage 5: VM Snapshot taken on VMware cluster (vCenter snapshot ID: snap-88491)</div>
-              <div>[00:00:12] Stage 6: Rolling package upgrades applied across {selectedRun.technology} target nodes</div>
-              {selectedRun.warnings > 0 && (
-                <div className="text-amber-400">[00:00:18] Stage 7: Post-validation probe warning (SSH latency retry on node 2)</div>
-              )}
-              <div>[00:00:22] Stage 8-9: SNOW CMDB, Change Request closed &amp; telemetry dispatched ✓</div>
-              <div className="text-cyan-300">[DONE] Status: {selectedRun.status} · Passed: {selectedRun.passed} · Warn: {selectedRun.warnings} · Failed: {selectedRun.failed}</div>
-            </div>
-
-            <div className="pt-3 border-t border-ink/[0.08] flex justify-end">
-              <button
-                onClick={() => setSelectedRun(null)}
-                className="px-4 py-2 text-xs font-semibold text-onbright bg-cyan-400 hover:bg-cyan-300 rounded-xl"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {selectedRun && <RunDetailModal key={selectedRun.id} run={selectedRun} initialTab={detailTab} onClose={() => setSelectedRun(null)} />}
     </div>
   );
 }

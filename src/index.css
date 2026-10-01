@@ -280,3 +280,66 @@ body {
 /* Settings → Appearance → Reduce motion */
 [data-motion='reduced'] *, [data-motion='reduced'] *::before, [data-motion='reduced'] *::after { animation: none !important; transition: none !important; }
 [data-motion='reduced'] .flow-dot { display: none; }
+
+/* Theme switch (Uiverse.io by metanef), scaled by font-size */
+.theme-switch {
+  --container-width: 5em;
+  --container-height: 2.4em;
+  --width: 1.84em;
+  --hover-width: 2.2em;
+  --offset: 0.28em;
+  --radius-btn: 999px;
+  --bg-light: #e8ecf2;
+  --bg-dark: #1a1d24;
+  --accent-light: #4f46e5;
+  --accent-dark: #14b8a6;
+  --icon-muted: #64748b;
+  --shadow-inset-light: inset 3px 3px 6px #c5cad3, inset -3px -3px 6px #ffffff;
+  --shadow-inset-dark: inset 3px 3px 6px #121419, inset -3px -3px 6px #22262f;
+  --transition-duration: 0.45s;
+  --short-transition-duration: 0.2s;
+  font-size: 11px;
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--container-width);
+  height: var(--container-height);
+}
+.theme-switch__input { opacity: 0; width: 0; height: 0; position: absolute; }
+.theme-switch__slider {
+  position: absolute; cursor: pointer; inset: 0;
+  background-color: var(--bg-light);
+  box-shadow: var(--shadow-inset-light);
+  transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
+  border-radius: var(--radius-btn);
+  display: flex; align-items: center; justify-content: space-between; padding: 0 0.65em;
+}
+.theme-switch__sun, .theme-switch__moon {
+  width: 1.25em; height: 1.25em; pointer-events: none; z-index: 1;
+  transition: opacity var(--transition-duration) ease-out, transform var(--transition-duration) ease-out, color var(--transition-duration) ease-out;
+}
+/* Light: sun hidden under the handle on the left, moon visible on the right */
+.theme-switch__sun { color: var(--accent-light); opacity: 0; transform: scale(0); }
+.theme-switch__moon { color: var(--icon-muted); opacity: 0.85; transform: scale(1); }
+/* Dark: moon hidden under the handle on the right, sun visible on the left */
+.theme-switch__input:checked + .theme-switch__slider .theme-switch__sun { color: var(--icon-muted); opacity: 0.85; transform: scale(1); }
+.theme-switch__input:checked + .theme-switch__slider .theme-switch__moon { color: var(--accent-dark); opacity: 0; transform: scale(0); }
+.theme-switch__slider::before {
+  position: absolute; content: ""; top: var(--offset); bottom: var(--offset);
+  width: var(--width); border-radius: 999px; left: var(--offset);
+  background-color: var(--accent-light);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  transition: transform var(--short-transition-duration), width var(--short-transition-duration), border-radius var(--short-transition-duration), background-color var(--short-transition-duration);
+  z-index: 2;
+}
+.theme-switch__input:checked + .theme-switch__slider { background-color: var(--bg-dark); box-shadow: var(--shadow-inset-dark); }
+.theme-switch__input:checked + .theme-switch__slider::before {
+  background-color: var(--accent-dark);
+  transform: translateX(calc(var(--container-width) - var(--offset) * 2 - var(--width)));
+}
+.theme-switch:hover .theme-switch__input:not(:checked) + .theme-switch__slider::before { width: var(--hover-width); }
+.theme-switch:hover .theme-switch__input:checked + .theme-switch__slider::before {
+  width: var(--hover-width);
+  transform: translateX(calc(var(--container-width) - var(--offset) * 2 - var(--hover-width)));
+}
+.theme-switch__input:focus-visible + .theme-switch__slider { outline: 2px solid #22d3ee; outline-offset: 2px; }
