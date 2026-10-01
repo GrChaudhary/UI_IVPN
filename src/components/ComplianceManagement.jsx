@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, HardDrive, Database, Network, BarChart3 } from 'lucide-react';
+import { HardDrive, Database, Network, BarChart3 } from 'lucide-react';
 import PageHeader from './ui/PageHeader';
 
 // Device counts per OEM and compliance state are the single source for every number on this page.
@@ -112,7 +112,7 @@ export default function ComplianceManagement() {
 
   return (
     <div className="p-6 space-y-6 w-full max-w-[1700px] mx-auto animate-in fade-in">
-      <PageHeader icon={ShieldCheck} tone="text-emerald-400" title="Compliance Management" subtitle="Device patch compliance against the N-1 baseline, by domain and OEM." />
+      <PageHeader title="Compliance Management" subtitle="Device patch compliance against the N-1 baseline, by domain and OEM." />
 
       {/* Metric cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3.5">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { MANAGED_HOSTS } from '../data/cmdbData';
 import {
   X,
   Bot,
@@ -104,7 +105,7 @@ export default function AgentDetailModal({ agent, onClose }) {
             <div className="p-3 bg-black/80 font-mono text-[11px] text-emerald-400/90 rounded-xl border border-ink/[0.08] space-y-1.5 leading-relaxed overflow-x-auto">
               <div>[00:00:01] Initializing agent context with tenant ID: Wipro-Primary</div>
               <div>[00:00:02] Querying N-1 baseline catalog from Satellite / WSUS repository</div>
-              <div>[00:00:04] 1,098 applicable advisories mapped across 40 managed hosts</div>
+              <div>[00:00:04] 1,098 applicable advisories mapped across {MANAGED_HOSTS} managed hosts</div>
               <div className="text-cyan-300">[00:00:05] Memory snapshot written to Milvus cluster (vector dimension: 1536)</div>
               <div className="text-fg3">[00:00:06] Awaiting next wave trigger event...</div>
             </div>

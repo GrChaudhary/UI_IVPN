@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
+import { ASSETS_BY_TECH } from '../data/cmdbData';
 
-const TECHS = [
+const RAW_TECHS = [
   { id: 'windows', label: 'Windows', color: '#38bdf8', hosts: 612, mix: [58, 22, 12, 8], pending: 148, critical: 23, lastRun: 'Sep 29 · Windows Prod Batch 1', next: 'Oct 06 · 10:00 PM', versions: [['Server 2022', 340], ['Server 2019', 210], ['Server 2016', 62]] },
   { id: 'rhel', label: 'RHEL', color: '#ef4444', hosts: 487, mix: [52, 26, 13, 9], pending: 96, critical: 17, lastRun: 'Sep 24 · RHEL Critical Fix', next: 'Oct 15 · 02:00 AM', versions: [['RHEL 9.4', 210], ['RHEL 8.9', 190], ['RHEL 8.7', 87]] },
   { id: 'mssql', label: 'MSSQL', color: '#f59e0b', hosts: 74, mix: [61, 20, 11, 8], pending: 18, critical: 4, lastRun: 'Sep 15 · Oracle & MSSQL CU', next: 'Oct 20 · 04:00 AM', versions: [['SQL 2022', 30], ['SQL 2019', 32], ['SQL 2016', 12]] },
@@ -8,6 +9,19 @@ const TECHS = [
   { id: 'weblogic', label: 'WebLogic', color: '#a855f7', hosts: 41, mix: [55, 24, 12, 9], pending: 14, critical: 3, lastRun: 'Sep 22 · Middleware Batch', next: 'Oct 27 · 11:30 PM', versions: [['WebLogic 14c', 22], ['WebLogic 12c', 19]] },
   { id: 'jboss', label: 'JBoss', color: '#10b981', hosts: 36, mix: [47, 29, 14, 10], pending: 19, critical: 5, lastRun: 'Sep 22 · Middleware Batch', next: 'Oct 27 · 11:30 PM', versions: [['EAP 7.4', 20], ['EAP 8.0', 16]] },
 ];
+
+/** Hosts come from the CMDB; version counts are re-split in the same proportions so they add up. */
+const TECHS = RAW_TECHS.map((t) => {
+  const hosts = ASSETS_BY_TECH[t.id.toUpperCase()].length;
+  const weight = t.versions.reduce((n, [, c]) => n + c, 0);
+  let left = hosts;
+  const versions = t.versions.map(([name, c], i) => {
+    const count = i === t.versions.length - 1 ? left : Math.round((c / weight) * hosts);
+    left -= count;
+    return [name, count];
+  });
+  return { ...t, hosts, versions };
+});
 
 const MIX = [
   ['Compliant', 'bg-emerald-400'],

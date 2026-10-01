@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X, ChevronRight, Play } from 'lucide-react';
+import { AGENTS_LIST } from '../data/nexusData';
 
 export default function TourModal({ isOpen, onClose }) {
   const [step, setStep] = useState(1);
@@ -11,7 +12,7 @@ export default function TourModal({ isOpen, onClose }) {
     {
       title: 'Welcome to Agentic Patch Management',
       content:
-        'This platform orchestrates end-to-end patch lifecycle across RHEL, Windows, and database servers using 18 AI agents.',
+        'This platform orchestrates end-to-end patch lifecycle across RHEL, Windows, and database servers using ' + AGENTS_LIST.length + ' AI agents.',
     },
     {
       title: 'Central Dashboard & Real-Time Telemetry',

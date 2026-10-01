@@ -18,6 +18,7 @@ import {
 import { WindowsMicroLogo, RhelMicroLogo } from './BackgroundTexture';
 import BrandMark from './BrandMark';
 import ThemeSwitch from './ui/ThemeSwitch';
+import { AGENTS_LIST } from '../data/nexusData';
 
 export default function TopHeader({
   activeTabTitle = 'Central Dashboard',
@@ -432,7 +433,7 @@ export default function TopHeader({
                     <span>Sanity Gate Passed</span>
                   </div>
                   <p className="text-[11px] text-fg3 mt-0.5">
-                    17 AI agent fleet operational and synced with CMDB.
+                    {AGENTS_LIST.length} AI agent fleet operational and synced with CMDB.
                   </p>
                 </div>
               </div>

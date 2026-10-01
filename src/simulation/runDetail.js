@@ -9,6 +9,16 @@ export const stageState = (run, i) =>
   : run.status === 'RUNNING' ? 'active'
   : 'pending';
 
+export const STATUS_LABELS = {
+  COMPLETED: 'Completed',
+  COMPLETED_WITH_WARNINGS: 'Completed with warnings',
+  RUNNING: 'Running',
+  DRY_RUN: 'Sandbox test',
+  ABORTED: 'Aborted',
+};
+export const MODE_LABELS = { 'ON-DEMAND': 'On-demand', SCHEDULED: 'Scheduled', SANDBOX: 'Sandbox' };
+export const weekLabel = (w) => (w === 'ONDEMAND' ? 'On-demand' : String(w).toUpperCase());
+
 const STAGE_AGENTS = [
   'sanity-check-agent',
   'patch-collection-agent',
@@ -239,11 +249,11 @@ export function buildRunDetail(run) {
 
   const facts = [
     ['Run ID', run.id],
-    ['Status', run.status.replace(/_/g, ' ')],
-    ['Mode', run.mode],
+    ['Status', STATUS_LABELS[run.status] ?? run.status],
+    ['Mode', MODE_LABELS[run.mode] ?? run.mode],
     ['Technology', run.technology],
     ['Environment', run.env],
-    ['Week', run.week],
+    ['Week', weekLabel(run.week)],
     ['Triggered by', run.triggeredBy],
     ['Started (IST)', run.started],
     ['Duration', formatDuration(durationSec)],

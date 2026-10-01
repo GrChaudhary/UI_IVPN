@@ -76,8 +76,8 @@ export default function AgentRegistry({
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-2">
           <span className="text-cyan-400">✦</span>
-          <h2 className="text-xs font-bold uppercase tracking-wider text-cyan-400">
-            Agents Registry
+          <h2 className="text-xs font-bold uppercase tracking-wider text-fg3">
+            {AGENTS_LIST.filter((a) => a.status === 'ACTIVE').length} of {AGENTS_LIST.length} agents active
           </h2>
         </div>
 

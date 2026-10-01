@@ -1,10 +1,12 @@
 import React from 'react';
-import { Activity, ExternalLink, Rocket, ShieldCheck, Server } from 'lucide-react';
+import { Activity, ExternalLink, Rocket, ShieldCheck, Server, Database } from 'lucide-react';
 import { ACTIVE_CAMPAIGNS, EXECUTION_RUNS } from '../data/nexusData';
+import { ASSETS_BY_TECH, MANAGED_HOSTS } from '../data/cmdbData';
 import { WindowsMicroLogo, RhelMicroLogo } from './BackgroundTexture';
 
-const WIN = 842;
-const RHEL = 578;
+const WIN = ASSETS_BY_TECH.WINDOWS.length;
+const RHEL = ASSETS_BY_TECH.RHEL.length;
+const OTHER = MANAGED_HOSTS - WIN - RHEL; // databases and middleware
 
 const STATUS_STYLE = {
   RUNNING: 'text-cyan-400 bg-cyan-500/10 border-cyan-500/30',
@@ -21,8 +23,9 @@ function Watermark({ icon: Icon, className }) {
 const TILE = 'relative overflow-hidden rounded-2xl p-4 bg-inset/60 border border-ink/[0.08]';
 
 export default function SystemCapacity({ onNavigateTab }) {
-  const total = WIN + RHEL;
+  const total = MANAGED_HOSTS;
   const winPct = (WIN / total) * 100;
+  const rhelPct = (RHEL / total) * 100;
   const sum = (k) => EXECUTION_RUNS.reduce((n, r) => n + r[k], 0);
   const passed = sum('passed'), warnings = sum('warnings'), failed = sum('failed');
   const hosts = passed + warnings + failed;
@@ -101,9 +104,10 @@ export default function SystemCapacity({ onNavigateTab }) {
           </div>
           <div className="flex h-2 rounded-full overflow-hidden mt-3 bg-slate-800">
             <div className="bg-sky-500" style={{ width: `${winPct}%` }} />
-            <div className="bg-red-500" style={{ width: `${100 - winPct}%` }} />
+            <div className="bg-red-500" style={{ width: `${rhelPct}%` }} />
+            <div className="bg-violet-500" style={{ width: `${100 - winPct - rhelPct}%` }} />
           </div>
-          <div className="grid grid-cols-2 gap-2 mt-3">
+          <div className="grid grid-cols-3 gap-2 mt-3">
             <div className="flex items-center gap-2 p-2 rounded-xl bg-blue-950/30 border border-blue-500/20">
               <WindowsMicroLogo className="w-4 h-4" color="#00a4ef" />
               <div className="leading-tight">
@@ -114,8 +118,15 @@ export default function SystemCapacity({ onNavigateTab }) {
             <div className="flex items-center gap-2 p-2 rounded-xl bg-red-950/30 border border-red-500/20">
               <RhelMicroLogo className="w-4 h-4" color="#ee0000" />
               <div className="leading-tight">
-                <div className="text-xs font-semibold text-red-200">RHEL 9</div>
+                <div className="text-xs font-semibold text-red-200">RHEL</div>
                 <div className="text-[10px] font-mono text-fg3">{RHEL} Nodes</div>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-2 rounded-xl bg-violet-950/30 border border-violet-500/20">
+              <Database size={16} className="text-violet-400 flex-shrink-0" />
+              <div className="leading-tight">
+                <div className="text-xs font-semibold text-violet-200">DB &amp; MW</div>
+                <div className="text-[10px] font-mono text-fg3">{OTHER} Nodes</div>
               </div>
             </div>
           </div>

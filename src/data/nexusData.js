@@ -1,4 +1,6 @@
-export const NEXUS_KPIS = [
+import { MANAGED_HOSTS } from './cmdbData';
+
+const KPI_BASE = [
   {
     id: 'patch-runs',
     label: 'PATCH RUNS',
@@ -60,7 +62,7 @@ export const NEXUS_KPIS = [
 export const ATTENTION_ITEMS = [
   {
     id: 'att-1',
-    severity: 'red',
+    severity: 'CRITICAL',
     dotColor: '#ef4444',
     title: '8 non-compliant devices',
     description: 'Storage arrays and hypervisors falling > 2 minor versions behind baseline N-1 standard.',
@@ -68,7 +70,7 @@ export const ATTENTION_ITEMS = [
   },
   {
     id: 'att-2',
-    severity: 'yellow',
+    severity: 'WARNING',
     dotColor: '#eab308',
     title: '3 devices N-1 behind',
     description: '3 secondary application hosts eligible for batch wave 03 patch orchestration.',
@@ -76,7 +78,7 @@ export const ATTENTION_ITEMS = [
   },
   {
     id: 'att-3',
-    severity: 'orange',
+    severity: 'HIGH',
     dotColor: '#f97316',
     title: '1 device N-3 behind',
     description: 'Critical DB gateway cluster requiring immediate out-of-band maintenance window.',
@@ -84,7 +86,7 @@ export const ATTENTION_ITEMS = [
   },
   {
     id: 'att-4',
-    severity: 'orange',
+    severity: 'HIGH',
     dotColor: '#f97316',
     title: '7 patch runs generated warnings',
     description: 'Post-validation script timeouts and transient SSH health retries during wave execution.',
@@ -412,3 +414,11 @@ export const EXECUTION_RUNS = [
   },
 ];
 
+/** Dashboard KPI cards; fleet and host figures follow the registries instead of being typed in. */
+export const NEXUS_KPIS = KPI_BASE.map((k) => {
+  if (k.id === 'hosts-managed') return { ...k, value: MANAGED_HOSTS.toLocaleString() };
+  if (k.id === 'agents-online') {
+    return { ...k, value: String(AGENTS_LIST.filter((a) => a.status === 'ACTIVE').length), subtext: `${AGENTS_LIST.length} total fleet` };
+  }
+  return k;
+});

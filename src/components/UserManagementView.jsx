@@ -60,7 +60,7 @@ export default function UserManagementView({ users, setUsers, currentUser, canMa
 
   return (
     <div className="p-6 space-y-5 w-full max-w-[1200px] mx-auto animate-in fade-in">
-      <PageHeader icon={Users} tone="text-violet-400" title="User Management" subtitle="Manage users, roles, registrations and AD integration for your tenant.">
+      <PageHeader title="User Management" subtitle="Manage users, roles, registrations and AD integration for your tenant.">
         <button
           onClick={() => setUsers(SEED_USERS)}
           className="flex items-center gap-1.5 px-3.5 py-2 bg-ink/[0.04] hover:bg-ink/[0.08] border border-ink/[0.1] rounded-lg text-xs font-semibold text-fg2 transition-all"

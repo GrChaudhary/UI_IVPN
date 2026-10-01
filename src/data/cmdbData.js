@@ -52,6 +52,9 @@ export function techOf({ name, os }) {
 
 export const CMDB_ASSETS = buildAssets();
 
+/** Hosts the platform manages (CMDB assets that belong to a technology scope). */
+export const MANAGED_HOSTS = CMDB_ASSETS.filter((a) => techOf(a)).length;
+
 /** Assets grouped by technology scope. */
 export const ASSETS_BY_TECH = CMDB_ASSETS.reduce((acc, a) => {
   const t = techOf(a);

@@ -11,6 +11,7 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import Select from './ui/Select';
+import PageHeader from './ui/PageHeader';
 import PatchCycleSchedule from './PatchCycleSchedule';
 
 export default function ScheduleOverview({ settings }) {
@@ -51,10 +52,7 @@ export default function ScheduleOverview({ settings }) {
 
   return (
     <div className="p-6 space-y-6 w-full animate-in fade-in">
-      <div className="space-y-1">
-        <h2 className="text-xl font-bold text-fg tracking-tight">Patch Window Planner</h2>
-        <p className="text-xs text-fg3">Maintenance windows, rollout waves and pre-patch snapshot &amp; backup policy.</p>
-      </div>
+      <PageHeader title="Patch Window Planner" subtitle="Maintenance windows, rollout waves and pre-patch snapshot & backup policy." />
 
       {/* 1. TOP SUBTABS BAR */}
       <div className="flex items-center gap-3 border-b border-ink/[0.08] pb-4">

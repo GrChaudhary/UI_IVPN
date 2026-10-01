@@ -24,7 +24,7 @@ export default function AccessControl({ users, setUsers, currentUser, canManage 
 
   return (
     <div className="p-6 space-y-5 w-full max-w-[1200px] mx-auto animate-in fade-in">
-      <PageHeader icon={Lock} tone="text-emerald-400" title="Access Control" subtitle="Review your identity and permissions, and manage role assignments for your tenant.">
+      <PageHeader title="Access Control" subtitle="Review your identity and permissions, and manage role assignments for your tenant.">
         <span className={`px-3 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wider ${myRole.tone.solid}`}>
           {me.name} · {myRole.label}
         </span>

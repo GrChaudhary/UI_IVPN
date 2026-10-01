@@ -43,14 +43,12 @@ export default function ConnectorMarketplace() {
   );
 
   return (
-    <div className="p-6 w-full animate-in fade-in">
-      <div className="nexus-card overflow-hidden">
-        {/* Header */}
-        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 border-b border-ink/[0.08]">
+    <div className="p-6 w-full space-y-6 animate-in fade-in">
+        {/* Status + actions (the top bar already names the page) */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-wider">
             <Plug size={14} className="text-emerald-400" />
-            <span className="text-fg">PCDK Connector Marketplace</span>
-            <span className="text-fg3 font-medium">{connectors.length} connectors</span>
+            <span className="text-fg3 font-medium">{connectors.length} technology connectors · {INFRA_CONNECTORS.length} infrastructure</span>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {pill(`${count('Active')} ACTIVE`, 'text-emerald-300 bg-emerald-500/10 border-emerald-500/30')}
@@ -66,7 +64,6 @@ export default function ConnectorMarketplace() {
           </div>
         </div>
 
-        <div className="p-5 space-y-6">
           {toast && (
             <div role="status" className="flex items-center gap-2 px-4 py-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300">
               <CheckCircle2 size={14} /> {toast}
@@ -139,7 +136,6 @@ export default function ConnectorMarketplace() {
           {/* ITSM & infrastructure */}
           <section className="space-y-3">
             <h3 className="text-[11px] font-bold uppercase tracking-wider text-fg2 flex items-center gap-2"><Server size={12} /> ITSM &amp; Infrastructure</h3>
-            <p className="text-[11px] text-emerald-400">Admin access detected: delete is enabled on technology connectors. <span className="text-fg2">Role: admin</span></p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
               {INFRA_CONNECTORS.map((i) => {
@@ -177,8 +173,7 @@ export default function ConnectorMarketplace() {
               })}
             </div>
           </section>
-        </div>
-      </div>
+
 
       {wizard && <ConnectorWizard preset={wizard} onClose={() => setWizard(null)} onActivate={activate} />}
     </div>

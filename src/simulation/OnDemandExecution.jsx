@@ -203,11 +203,11 @@ export default function OnDemandExecution({ onSimulationComplete, onNavigateTab,
           <div className="flex items-center gap-2">
             <span className={`w-2 h-2 rounded-full ${isRunning ? 'bg-amber-400' : 'bg-cyan-400'} animate-pulse`} />
             <span className="text-xs font-bold text-cyan-400 uppercase tracking-widest font-mono">
-              On-Demand Patch Execution
+              {isRunning ? 'Run in progress' : status === 'idle' ? 'Ready to compose' : 'Run finished'}
             </span>
           </div>
-          <h2 className="text-xl font-bold text-fg tracking-tight mt-1">Compose a patch run</h2>
-          <p className="text-xs text-fg3">Pick scope, review the blast radius, then launch the 9-stage lifecycle.</p>
+          <h2 className="sr-only">On-Demand Patch Execution</h2>
+          <p className="text-xs text-fg3 mt-1">Pick scope, review the blast radius, then launch the 9-stage lifecycle.</p>
         </div>
         <button
           onClick={() => onNavigateTab?.('history')}
@@ -382,7 +382,7 @@ export default function OnDemandExecution({ onSimulationComplete, onNavigateTab,
               <span className="flex items-center gap-1.5"><Terminal size={13} className="text-cyan-400" /> Execution output</span>
               <span>tty0 · UTF-8</span>
             </div>
-            <div className="h-44 overflow-y-auto space-y-1 text-[11px] leading-relaxed pr-1 custom-scrollbar">
+            <div className={`${status === 'idle' ? 'h-16' : 'h-44'} overflow-y-auto space-y-1 text-[11px] leading-relaxed pr-1 custom-scrollbar transition-[height] duration-300`}>
               {logs.map((l, i) => <div key={i} className={logColor(l)}>{l}</div>)}
               <div ref={logsEndRef} />
             </div>

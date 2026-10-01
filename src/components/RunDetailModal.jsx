@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { X, CheckCircle2, XCircle, Loader2, Circle, ChevronDown, AlertTriangle, Download, FileSpreadsheet, FileText, Presentation, FileType2, Table2, Sparkles } from 'lucide-react';
 import ModalPortal from './ui/ModalPortal';
-import { buildRunDetail, formatDuration } from '../simulation/runDetail';
+import { buildRunDetail, formatDuration, STATUS_LABELS, MODE_LABELS, weekLabel } from '../simulation/runDetail';
 import { REPORT_FORMATS, downloadRunReport } from '../simulation/runReport';
 
 const TABS = [['stages', 'Stage timeline'], ['hosts', 'Hosts'], ['report', 'Report & export']];
@@ -123,11 +123,11 @@ export default function RunDetailModal({ run, initialTab = 'stages', onClose }) 
                 {run.simulated && (
                   <span className="text-[10px] bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 px-2.5 py-0.5 rounded-full font-bold flex items-center gap-1"><Sparkles size={10} /> SIMULATED</span>
                 )}
-                <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-bold ${run.statusColor}`}>{run.status.replace(/_/g, ' ')}</span>
-                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-400 text-onbright font-bold">{run.mode}</span>
+                <span className={`text-[10px] px-2.5 py-0.5 rounded-full border font-bold ${run.statusColor}`}>{STATUS_LABELS[run.status] ?? run.status}</span>
+                <span className="text-[10px] px-2.5 py-0.5 rounded-full bg-amber-400 text-onbright font-bold">{MODE_LABELS[run.mode] ?? run.mode}</span>
               </div>
               <h3 className="text-sm font-bold font-mono break-all">{run.id}</h3>
-              <p className="text-xs text-fg3 mt-0.5">{run.technology} · {run.env} · {run.week} · by {run.triggeredBy} · {run.started} IST</p>
+              <p className="text-xs text-fg3 mt-0.5">{run.technology} · {run.env} · {weekLabel(run.week)} · by {run.triggeredBy} · {run.started} IST</p>
             </div>
             <button onClick={onClose} aria-label="Close" className="p-1 text-fg3 hover:text-fg rounded-lg hover:bg-ink/[0.08] flex-shrink-0"><X size={18} /></button>
           </div>

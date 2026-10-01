@@ -64,9 +64,9 @@ export default function ToolRegistration() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Wrench size={18} className="text-cyan-400" />
-          <h2 className="text-xs font-bold uppercase tracking-wider text-cyan-400 font-mono">
-            TOOL REGISTRATION · 19 REGISTERED
+          <Wrench size={16} className="text-cyan-400" />
+          <h2 className="text-xs font-bold uppercase tracking-wider text-fg3 font-mono">
+            {REGISTERED_TOOLS.length} registered
           </h2>
         </div>
         <button

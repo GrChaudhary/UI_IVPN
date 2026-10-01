@@ -10,7 +10,9 @@ import {
   useLocalRuntime,
 } from '@assistant-ui/react';
 import { VoiceOrb } from './VoiceOrb';
-import { Send, Bot, User, Square, ArrowDown, Copy, Check, RefreshCw, History, Plus, Search, Trash2, MessageSquare } from 'lucide-react';
+import { AGENTS_LIST } from '../data/nexusData';
+import { MANAGED_HOSTS } from '../data/cmdbData';
+import { ShieldAlert, Gauge, ListChecks, FileCheck2, Send, Bot, User, Square, ArrowDown, Copy, Check, RefreshCw, History, Plus, Search, Trash2, MessageSquare } from 'lucide-react';
 
 const SUGGESTED_PROMPTS = [
   'Why are 8 storage devices non-compliant?',
@@ -124,9 +126,9 @@ export default function AIChatCopilot() {
         <div className="nexus-card p-4 flex items-center justify-between gap-3">
           <div>
             <h2 className="text-sm font-bold text-fg flex items-center gap-2">
-              <span>{active ? active.title : 'Agentic Patch Copilot'}</span>
+              <span>{active ? active.title : 'New conversation'}</span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-                18 Agents Connected
+                {AGENTS_LIST.length} Agents Connected
               </span>
             </h2>
             <p className="text-xs text-fg3 mt-0.5">
@@ -297,6 +299,13 @@ function Suggestions({ className = '' }) {
   );
 }
 
+const STARTERS = [
+  { icon: ShieldAlert, title: 'Investigate compliance', prompt: SUGGESTED_PROMPTS[0] },
+  { icon: Gauge, title: 'Assess wave risk', prompt: SUGGESTED_PROMPTS[1] },
+  { icon: ListChecks, title: 'Run pre-flight checks', prompt: SUGGESTED_PROMPTS[2] },
+  { icon: FileCheck2, title: 'Summarise evidence', prompt: SUGGESTED_PROMPTS[3] },
+];
+
 function Welcome() {
   return (
     <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-center gap-4 px-4">
@@ -304,11 +313,23 @@ function Welcome() {
       <div className="max-w-xl space-y-1.5">
         <h3 className="text-base font-bold text-fg">Hello Wipro Admin!</h3>
         <p className="text-xs text-fg3 leading-relaxed">
-          I am your Agentic Patching Copilot. I have real-time visibility into all 18 AI agents, 40 managed hosts,
+          I am your Agentic Patching Copilot. I have real-time visibility into all {AGENTS_LIST.length} AI agents, {MANAGED_HOSTS} managed hosts,
           baseline compliance drift, and active patch cycles. How can I assist you today?
         </p>
       </div>
-      <Suggestions className="flex-wrap justify-center max-w-2xl" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 w-full max-w-2xl text-left">
+        {STARTERS.map(({ icon: Icon, title, prompt }) => (
+          <ThreadPrimitive.Suggestion
+            key={prompt}
+            prompt={prompt}
+            send
+            className="group p-3.5 rounded-xl bg-ink/[0.03] hover:bg-ink/[0.07] border border-ink/[0.08] hover:border-cyan-500/40 transition-all active:scale-[0.99]"
+          >
+            <span className="flex items-center gap-2 text-xs font-bold text-fg group-hover:text-cyan-300"><Icon size={14} className="text-cyan-400" /> {title}</span>
+            <span className="block text-[11px] text-fg3 mt-1 leading-snug">{prompt}</span>
+          </ThreadPrimitive.Suggestion>
+        ))}
+      </div>
     </div>
   );
 }

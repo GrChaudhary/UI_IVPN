@@ -5,6 +5,12 @@ import SystemCapacity from './SystemCapacity';
 import TechFleetWidget from './TechFleetWidget';
 import { Globe, Server, Layers, HardDrive, Cpu } from 'lucide-react';
 
+const SEVERITY_TONE = {
+  CRITICAL: 'bg-red-500/20 text-red-400 border-red-500/30',
+  HIGH: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+  WARNING: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
+};
+
 const KPI_ICONS = {
   'patch-runs': Activity, platforms: Globe, 'hosts-managed': Server, 'patches-found': Layers,
   'infra-devices': HardDrive, 'agents-online': Cpu, 'sanity-pass': CheckCircle2,
@@ -118,11 +124,7 @@ export default function CentralDashboard({
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span
-                      className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded tracking-wide ${
-                        item.severity === 'CRITICAL'
-                          ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                          : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                      }`}
+                      className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded tracking-wide border ${SEVERITY_TONE[item.severity]}`}
                     >
                       {item.severity}
                     </span>
@@ -662,7 +664,7 @@ export default function CentralDashboard({
               </div>
               <div>
                 <span className="text-fg3">Severity: </span>
-                <span className="font-mono text-red-400 font-bold">{selectedAttention.severity}</span>
+                <span className={`font-mono font-bold px-1.5 py-0.5 rounded border text-[10px] ${SEVERITY_TONE[selectedAttention.severity]}`}>{selectedAttention.severity}</span>
               </div>
               <div>
                 <span className="text-fg3">Description: </span>

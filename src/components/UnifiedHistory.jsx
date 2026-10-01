@@ -1,9 +1,9 @@
 import React, { useState, useMemo } from 'react';
-import { History as HistoryIcon, Filter, Search, ChevronRight, Sparkles, Download } from 'lucide-react';
+import { Filter, Search, ChevronRight, Sparkles, Download } from 'lucide-react';
 import Select from './ui/Select';
 import PageHeader from './ui/PageHeader';
 import { TECH_OPTIONS } from '../simulation/simulationEngine';
-import { stageState } from '../simulation/runDetail';
+import { stageState, STATUS_LABELS, MODE_LABELS, weekLabel } from '../simulation/runDetail';
 import RunDetailModal from './RunDetailModal';
 
 /* ---------- static seed (fallback when App hasn't loaded EXECUTION_RUNS) ---------- */
@@ -87,14 +87,6 @@ const STATIC_SEED = [
   },
 ];
 
-const STATUS_LABELS = {
-  COMPLETED: 'Completed',
-  COMPLETED_WITH_WARNINGS: 'Completed with warnings',
-  RUNNING: 'Running',
-  DRY_RUN: 'Sandbox test',
-  ABORTED: 'Aborted',
-};
-
 const STAGE_TONE = { done: 'bg-emerald-400', active: 'bg-amber-400', failed: 'bg-red-500', pending: 'bg-slate-600' };
 
 const unique = (runs, key) => [...new Set(runs.map((r) => r[key]).filter(Boolean))];
@@ -132,7 +124,7 @@ export default function UnifiedHistory({ historyRuns }) {
 
   return (
     <div className="p-6 space-y-4 w-full max-w-[1700px] mx-auto animate-in fade-in duration-300">
-      <PageHeader icon={HistoryIcon} tone="text-cyan-400" title="Execution History" subtitle="Every patch run across environments, with stage-by-stage progress." />
+      <PageHeader title="Execution History" subtitle="Every patch run across environments, with stage-by-stage progress." />
 
       {/* KPI row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -149,7 +141,7 @@ export default function UnifiedHistory({ historyRuns }) {
         <span className="flex items-center gap-2 px-2 text-[11px] font-bold uppercase tracking-wider text-fg3">
           <Filter size={13} /> Filters
         </span>
-        <Select value={modeFilter} onValueChange={setModeFilter} aria-label="Mode filter" options={[{ value: 'All', label: 'All Modes' }, ...unique(runs, 'mode')]} />
+        <Select value={modeFilter} onValueChange={setModeFilter} aria-label="Mode filter" options={[{ value: 'All', label: 'All Modes' }, ...unique(runs, 'mode').map((m) => ({ value: m, label: MODE_LABELS[m] ?? m }))]} />
         <Select value={envFilter} onValueChange={setEnvFilter} aria-label="Environment filter" options={[{ value: 'All', label: 'All Environments' }, ...unique(runs, 'env')]} />
         <Select
           value={statusFilter}
@@ -172,12 +164,12 @@ export default function UnifiedHistory({ historyRuns }) {
         <span className="ml-auto pr-2 text-[11px] text-fg3">{filtered.length} results</span>
       </div>
 
-      {/* Stage legend */}
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-[10px] font-mono text-fg3">
-        {Array.from({ length: 9 }, (_, i) => (
-          <span key={i} className="flex items-center gap-1"><span className="w-2 h-2 rounded-[2px] bg-fg" />S{i + 1}</span>
+      {/* Stage legend: swatches match the table */}
+      <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1 text-[11px] text-fg3">
+        <span className="font-semibold text-fg2">Stages S1–S9</span>
+        {[['done', 'Completed'], ['active', 'In progress'], ['failed', 'Failed'], ['pending', 'Pending']].map(([k, label]) => (
+          <span key={k} className="flex items-center gap-1.5"><span className={`w-2.5 h-2.5 rounded-[2px] ${STAGE_TONE[k]}`} />{label}</span>
         ))}
-        <span className="ml-1">Green = completed · Yellow = in-progress · Red = failed · Gray = pending</span>
       </div>
 
       {/* Table */}
@@ -210,16 +202,16 @@ export default function UnifiedHistory({ historyRuns }) {
                       </div>
                     </td>
                     <td className="py-3 px-2">
-                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-onbright whitespace-nowrap">✦ {run.mode}</span>
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-onbright whitespace-nowrap">✦ {MODE_LABELS[run.mode] ?? run.mode}</span>
                     </td>
                     <td className="py-3 px-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase border ${run.week === 'ONDEMAND' ? 'bg-slate-500/15 text-fg2 border-ink/15' : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'}`}>
-                        {run.week}
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${run.week === 'ONDEMAND' ? 'bg-slate-500/15 text-fg2 border-ink/15' : 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'}`}>
+                        {weekLabel(run.week)}
                       </span>
                     </td>
                     <td className="py-3 px-2 font-sans text-fg2">{run.env}</td>
                     <td className="py-3 px-2">
-                      <span className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold border whitespace-nowrap ${run.statusColor}`}>{run.status}</span>
+                      <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold border whitespace-nowrap ${run.statusColor}`}>{STATUS_LABELS[run.status] ?? run.status}</span>
                     </td>
                     <td className="py-3 px-2">
                       <div className="flex items-center gap-1.5">
@@ -253,7 +245,42 @@ export default function UnifiedHistory({ historyRuns }) {
         )}
       </div>
 
+      {filtered.length > 0 && <OutcomeSummary runs={filtered} />}
+
       {selectedRun && <RunDetailModal key={selectedRun.id} run={selectedRun} initialTab={detailTab} onClose={() => setSelectedRun(null)} />}
+    </div>
+  );
+}
+
+/** At-a-glance outcome of the runs currently listed: status mix and host totals. */
+function OutcomeSummary({ runs }) {
+  const byStatus = Object.keys(STATUS_LABELS)
+    .map((status) => ({ status, count: runs.filter((r) => r.status === status).length }))
+    .filter((s) => s.count > 0);
+  const sum = (k) => runs.reduce((n, r) => n + (r[k] ?? 0), 0);
+  const bar = { COMPLETED: 'bg-emerald-400', COMPLETED_WITH_WARNINGS: 'bg-amber-400', RUNNING: 'bg-cyan-400', DRY_RUN: 'bg-slate-400', ABORTED: 'bg-rose-500' };
+  const tiles = [['Hosts passed', sum('passed'), 'text-emerald-400'], ['Warnings', sum('warnings'), 'text-amber-400'], ['Failed', sum('failed'), 'text-rose-400']];
+  return (
+    <div className="nexus-card p-5 grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+      <div className="lg:col-span-7 space-y-2.5">
+        <div className="text-[11px] font-bold uppercase tracking-widest text-fg2">Outcome mix · {runs.length} run{runs.length === 1 ? '' : 's'}</div>
+        <div className="flex h-3 rounded-full overflow-hidden bg-inset">
+          {byStatus.map((s) => <div key={s.status} className={bar[s.status]} style={{ width: `${(s.count / runs.length) * 100}%` }} title={`${STATUS_LABELS[s.status]}: ${s.count}`} />)}
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-fg3">
+          {byStatus.map((s) => (
+            <span key={s.status} className="flex items-center gap-1.5"><span className={`w-2 h-2 rounded-full ${bar[s.status]}`} />{STATUS_LABELS[s.status]} <b className="text-fg2 font-mono">{s.count}</b></span>
+          ))}
+        </div>
+      </div>
+      <div className="lg:col-span-5 grid grid-cols-3 gap-3">
+        {tiles.map(([label, value, tone]) => (
+          <div key={label} className="p-3 rounded-xl bg-inset border border-ink/[0.06] text-center">
+            <div className={`text-xl font-extrabold font-mono ${tone}`}>{value}</div>
+            <div className="text-[10px] text-fg3 mt-0.5">{label}</div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
